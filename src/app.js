@@ -59,12 +59,12 @@ router.get('/:id', async (req, res, next) => {
         const values = [todoID];
 
         const [data] = await db.execute(sql, values);
-
+        
         return res.status(200).json({
             status: true,
             statusCode: 200,
             message: 'Success retrieved todo detail',
-            data,
+            data: data[0],
         });
 
     } catch (error) {
