@@ -29,32 +29,44 @@ const errorHandler = async (error, req, res, next) => {
 };
 
 router.get('/', async (req, res, next) => {
+
     try {
+
         const sql = `SELECT * FROM todos`;
+
         const [data] = await db.execute(sql);
+
         res.status(200).json({
             status: true,
             statusCode: 200,
             message: 'Success retrieved all todos data',
             data,
         });
+
     } catch (error) {
         next(error);
     }
 });
 
 router.get('/:id', async (req, res, next) => {
+
     const { id: todoID } = req.params;
+
     try {
+
         const sql = `SELECT * FROM todos WHERE id = ?`;
+
         const values = [todoID];
+
         const [data] = await db.execute(sql, values);
+
         return res.status(200).json({
             status: true,
             statusCode: 200,
             message: 'Success retrieved todo detail',
             data,
         });
+
     } catch (error) {
         return next(error);
     }
@@ -64,21 +76,27 @@ router.post('/', async (req, res, next) => {
     const { text } = req.body;
 
     try {
+
         const sql = `INSERT INTO todos (text) VALUES (?)`;
+
         const values = [text];
+
         const [data] = await db.execute(sql, values);
+
         return res.status(200).json({
             status: true,
             statusCode: 200,
             message: 'Success created new todo',
             data,
         });
+
     } catch (error) {
         return next(error);
     }
 });
 
 router.put('/:id', async (req, res, next) => {
+
     const { id: todoID } = req.params;
     const { text, status } = req.body;
 
@@ -105,6 +123,7 @@ router.put('/:id', async (req, res, next) => {
             message: 'Success updated new todo',
             data,
         });
+
     } catch (error) {
         return next(error);
     }
@@ -123,22 +142,22 @@ router.patch('/:id', async (req, res, next) => {
             message: 'Invalid input: text cannot be empty and status must be a boolean'
         });
     }
-    
+
     try {
 
         const updates = [];
         const values = [];
-        
+
         if (text !== undefined) {
             updates.push('text = ?');
             values.push(text);
         }
-        
+
         if (status !== undefined) {
             updates.push('status = ?');
             values.push(status);
         }
-        
+
         if (updates.length === 0) {
             return res.status(400).json({
                 status: false,
@@ -146,9 +165,9 @@ router.patch('/:id', async (req, res, next) => {
                 message: 'No valid fields to update'
             });
         }
-        
+
         values.push(todoID);
-        
+
         const sql = `UPDATE todos SET ${updates.join(', ')} WHERE id = ?`;
 
         const [data] = await db.execute(sql, values);
@@ -159,6 +178,7 @@ router.patch('/:id', async (req, res, next) => {
             message: 'Success updated todo data',
             data
         });
+
     } catch (error) {
         return next(error);
     }
@@ -183,12 +203,13 @@ router.delete('/:id', async (req, res, next) => {
             message: 'Success deleted todo data',
             data
         });
+
     } catch (error) {
         return next(error);
     }
 })
 
-app.use('/todos', router);
+app.use('/api/v1/todos', router);
 router.use(errorHandler);
 
 export default app;
